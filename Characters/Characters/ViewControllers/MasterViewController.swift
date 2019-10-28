@@ -35,7 +35,10 @@ class MasterViewController: UIViewController {
         clearSelection()
     }
     
-    func prepareCharacters() {
+    /*
+     A method to download and display data from API
+     */
+    private func prepareCharacters() {
         UseCase.shared.getCharacters { (error, charactersModel) in
             guard error == nil else {
                 self.showAlertWith(description: error?.localizedDescription ?? kUnkownError)
@@ -61,6 +64,7 @@ class MasterViewController: UIViewController {
                 let object = isSearchOn ? filteredCharacterList[indexPath.row] : charactersList[indexPath.row]
                 if let controller = (segue.destination as! UINavigationController).topViewController as? DetailViewProtocol {
                     controller.character = object
+                    controller.detailViewTapDelegate = self
                     controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
                     controller.navigationItem.leftItemsSupplementBackButton = true
                 }
@@ -74,6 +78,9 @@ class MasterViewController: UIViewController {
         }
     }
     
+    /*
+     A method to load data in table view based on user entered text in search bar.
+     */
     private func filterCharactersFor(_ searchText: String) {
         filteredCharacterList = charactersList.filter { character in
             let stringMatch = character.detail?.lowercased().range(of: searchText.lowercased())
@@ -103,6 +110,9 @@ extension MasterViewController: UITableViewDataSource {
     
 }
 
+/*
+ An extension to handle table view delegate
+ */
 extension MasterViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -110,6 +120,9 @@ extension MasterViewController: UITableViewDelegate {
     }
 }
 
+/*
+ An extension to handle search bar delegate
+ */
 extension MasterViewController: UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -126,3 +139,13 @@ extension MasterViewController: UISearchBarDelegate {
         searchBar.resignFirstResponder()
     }
 }
+
+/*
+ An extension to hadnle Detail view tap protocl
+ */
+extension MasterViewController: DetailViewTapProtocol {
+    func dismissKeyboardOnTap() {
+        self.searchBar.resignFirstResponder()
+    }
+}
+  

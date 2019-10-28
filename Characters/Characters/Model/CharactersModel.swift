@@ -7,7 +7,9 @@
 //
 
 
-
+/*
+ A model class to store set of characters
+ */
 struct CharactersModel: Codable {
     
     var characters: [Character]
@@ -17,6 +19,9 @@ struct CharactersModel: Codable {
     }
 }
 
+/*
+ A model class to represent indivudual character
+ */
 struct Character: Codable {
     
     var detail: String?
@@ -39,6 +44,9 @@ struct Character: Codable {
     }
 }
 
+/*
+ A model class to store image URL
+ */
 struct Icon: Codable {
     
     var imageURL: String?

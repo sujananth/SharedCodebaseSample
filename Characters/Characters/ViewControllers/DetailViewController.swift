@@ -9,9 +9,13 @@
 import UIKit
 import Nuke
 
+protocol DetailViewTapProtocol: class {
+    func dismissKeyboardOnTap()
+}
+
 protocol DetailViewProtocol: UIViewController {
     var character: Character? { get set }
-    func configureView()
+    var detailViewTapDelegate: DetailViewTapProtocol? { get set }
 }
 
 class DetailViewController: UIViewController, DetailViewProtocol {
@@ -19,10 +23,16 @@ class DetailViewController: UIViewController, DetailViewProtocol {
     @IBOutlet weak var detailDescriptionLabel: UILabel!
     @IBOutlet weak var characterImageView: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
+    weak var detailViewTapDelegate: DetailViewTapProtocol?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         configureView()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTappedOnScreen))
+        view.addGestureRecognizer(tap)
     }
     
     var character: Character? {
@@ -31,7 +41,7 @@ class DetailViewController: UIViewController, DetailViewProtocol {
         }
     }
     
-    func configureView() {
+    private func configureView() {
         if let detailLabel = detailDescriptionLabel, let nameLabel = titleLabel {
             detailLabel.text = character?.getCharacterDetail()
             nameLabel.text = character?.getCharacterName()
@@ -42,6 +52,12 @@ class DetailViewController: UIViewController, DetailViewProtocol {
             if let imageURL = URL(string: character?.icon.imageURL ?? "") {
                 Nuke.loadImage(with: imageURL, options: options, into: characterImageView)
             }
+        }
+    }
+    
+    @objc func didTappedOnScreen() {
+        if UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad {
+            detailViewTapDelegate?.dismissKeyboardOnTap()
         }
     }
 }
